@@ -5,17 +5,11 @@ import string
 
 def remove_x(liste): 
     pattern = r"([\+|\-]?[0-9]*[\.]?[0-9]*)"
-    #pattern = r"([0-9]*[\.]?[0-9]*)"
     value = []
     for x in liste:
         tmp = re.findall(pattern, x)
-        print "TMP !:"
-        print tmp
         if tmp[0]:
             value.append(tmp[0])
-        print "VALUE !:"
-        print value
-        print len(value)
         if not len(value):
             value.append("1")
         elif (value[0] == '+' or value[0] == '-'):
@@ -38,26 +32,15 @@ def modif_string_to_float(liste):
     new_value = 0
     tmp = []
     value = 0
-    print "\n TOOOOO \n"
     for x in liste:
         pos = get_sign(x)
-        print "x is : "
-        print x
-        print "pos is : "
-        print pos
         tmp = re.findall(r"([0-9]*[\.]?[0-9]*)", x)
-        print "tmp is : "
-        print tmp
         for x in tmp:
             if x:
                 value = float(x)
         if (pos == '-'):
             value *= -1.
-        print "value is : "
-        print value
         new_value += value
-    print "new_value is : "
-    print new_value
     return new_value
 
 def remove_x_in_num(num):
@@ -88,6 +71,7 @@ def parse_value(liste):
     pattern1_empty = r"([\+|\-]?[[0-9]*[\.]?[0-9]*]*X[^\^])"
     
     print liste
+    liste += " "
     num = re.findall(pattern,liste)
     x1 = re.findall(pattern1,liste)
     x_zero = re.findall(pattern_zero,liste)
@@ -177,9 +161,6 @@ def solve_one_solution(liste, discrim):
     print "Only one solution"
     print x1
 
-def no_real_root():
-    print "There are no real solutions. The values are complex numbers"
-
 def convert_to_str(value, index):
     if (value >= 0 and index != 0):
         tmp = "+"+str(value)
@@ -209,10 +190,6 @@ def print_reducted_form(liste):
     sys.stdout.write(" = 0\n")
 
 def solve_first_degree(lst):
-    print lst[0]
-    print lst[1]
-    print lst[2]
-    print lst[3]
     b = -lst[1]
     a = lst[2]
     print b/a
@@ -237,6 +214,8 @@ def test(argv):
     lst = sum_lst_value(list_left, list_right)
     print_reducted_form(lst)
 
+    print "lst"
+    print lst
     if not lst[1]:
         lst[1] = 0
     if not lst[0]:
@@ -247,17 +226,16 @@ def test(argv):
         print "Polnomial degree 1"
         solve_first_degree(lst)
         return
-
-    if lst[3] and lst[2]:
+    elif lst[3] or lst[2]:
         discrim = (lst[2] * lst[2]) - (4 * lst[3] * lst[1])
         if discrim > 0:
             solve_two_solution(lst, discrim)
         elif discrim == 0:
             solve_one_solution(lst, discrim)
         else:
-            no_real_root()
+            print "There are no real solutions. The values are complex numbers"
     else:
-        print "this is ridiculous"
+        print "We conclude that equation has no solutions"
 
 if __name__ == "__main__":
     test(sys.argv)
