@@ -5,16 +5,21 @@ import string
 
 def remove_x(liste): 
     pattern = r"([\+|\-]?[0-9]*[\.]?[0-9]*)"
+    #pattern = r"([0-9]*[\.]?[0-9]*)"
     value = []
     for x in liste:
         tmp = re.findall(pattern, x)
-        if len(tmp):
-            if tmp[0]:
-                value.append(tmp[0])
-            else:
-                value.append("1")
-        else:
+        print "TMP !:"
+        print tmp
+        if tmp[0]:
+            value.append(tmp[0])
+        print "VALUE !:"
+        print value
+        print len(value)
+        if not len(value):
             value.append("1")
+        elif (value[0] == '+' or value[0] == '-'):
+            value[0] += "1"
     return value
 
 def remove_value_from_list(the_list, source):
@@ -82,6 +87,7 @@ def parse_value(liste):
     pattern_zero = r"([\+|\-]?[[0-9]*[\.]?[0-9]*]*X\^0)"
     pattern1_empty = r"([\+|\-]?[[0-9]*[\.]?[0-9]*]*X[^\^])"
     
+    print liste
     num = re.findall(pattern,liste)
     x1 = re.findall(pattern1,liste)
     x_zero = re.findall(pattern_zero,liste)
@@ -97,6 +103,10 @@ def parse_value(liste):
     
     x1 = remove_x(x1)
     x2 = remove_x(x2)
+    print "x1"
+    print x1
+    print "x2"
+    print x2
 
     x1_empty = remove_x(x1_empty)
     x_zero = remove_x(x_zero)
@@ -198,6 +208,15 @@ def print_reducted_form(liste):
         index += 1
     sys.stdout.write(" = 0\n")
 
+def solve_first_degree(lst):
+    print lst[0]
+    print lst[1]
+    print lst[2]
+    print lst[3]
+    b = -lst[1]
+    a = lst[2]
+    print b/a
+
 def test(argv):
     lst = []
     discrim = 0
@@ -207,7 +226,7 @@ def test(argv):
     lst = argv[1].split('=')
     lst[0] = ' '+lst[0]
     lst[1] = ' '+lst[1]
-    
+
     list_left = parse_value(lst[0])
     list_right = parse_value(lst[1])
 
@@ -220,23 +239,25 @@ def test(argv):
 
     if not lst[1]:
         lst[1] = 0
-    else:
-        lst[1] = 1
     if not lst[0]:
         lst[0] = 0
     lst[1] += lst[0]
 
+    if not lst[3] and lst[2]:
+        print "Polnomial degree 1"
+        solve_first_degree(lst)
+        return
 
-    if lst[3]:
+    if lst[3] and lst[2]:
         discrim = (lst[2] * lst[2]) - (4 * lst[3] * lst[1])
-    
-    
-    if discrim > 0:
-        solve_two_solution(lst, discrim)
-    elif discrim == 0:
-        solve_one_solution(lst, discrim)
+        if discrim > 0:
+            solve_two_solution(lst, discrim)
+        elif discrim == 0:
+            solve_one_solution(lst, discrim)
+        else:
+            no_real_root()
     else:
-        no_real_root()
+        print "this is ridiculous"
 
 if __name__ == "__main__":
     test(sys.argv)
