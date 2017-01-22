@@ -61,23 +61,40 @@ def parse_value(liste):
     num = []
     x1 = []
     x2 = []
+    x_other = []
     x1_empty = []
     x_zero = []
     final_list = []
     pattern = r"([^\^][0-9]+[\.]?[0-9]*)"
-    pattern1 = r"([\+|\-]?[[0-9]*[\.]?[0-9]*]*X\^1)"
-    pattern2 = r"([\+|\-]?[[0-9]*[\.]?[0-9]*]*X\^2)"
-    pattern_zero = r"([\+|\-]?[[0-9]*[\.]?[0-9]*]*X\^0)"
+    pattern1 = r"([\+|\-]?[[0-9]*[\.]?[0-9]*]*X\^1(?![0-9]))"
+    pattern2 = r"([\+|\-]?[[0-9]*[\.]?[0-9]*]*X\^2(?![0-9]))"
+    pattern_zero = r"([\+|\-]?[[0-9]*[\.]?[0-9]*]*X\^0(?![0-9]))"
+    pattern_other = r"([\+|\-]?[[0-9]*[\.]?[0-9]*]*X\^[^0-2]|[\+|\-]?[[0-9]*[\.]?[0-9]*]*X\^[1-2][0-9])"
     pattern1_empty = r"([\+|\-]?[[0-9]*[\.]?[0-9]*]*X[^\^])"
     
-    print liste
     liste += " "
     num = re.findall(pattern,liste)
     x1 = re.findall(pattern1,liste)
     x_zero = re.findall(pattern_zero,liste)
     x1_empty = re.findall(pattern1_empty,liste)
     x2 = re.findall(pattern2,liste)
-    
+
+    #if an exponential greater than 2 is find return
+    x_other = re.findall(pattern_other,liste)
+    print "x_other"
+    print x_other
+    for x in x_other:
+      ret = re.findall(r"([0-9]$)", x)
+      print "ret"
+      print ret
+      if ret:
+        print "Exponential greater than 2"
+      else:
+        print "Parsing error"
+      sys.exit()
+
+    print liste
+
     print " BEFORE num"
     print num
     print "x1"
@@ -194,6 +211,19 @@ def solve_first_degree(lst):
     a = lst[2]
     print b/a
 
+def solve_complex_solution(lst, discrim):
+    discrim = discrim*-1
+    x_before_i = (-lst[2])/(2.*lst[3])
+    x_after_i = (discrim**(.5))/(2.*lst[3])
+    sys.stdout.write(str(x_before_i))
+    sys.stdout.write(" + i *")
+    sys.stdout.write(str(x_after_i))
+    sys.stdout.write("\n")
+    sys.stdout.write(str(x_before_i))
+    sys.stdout.write(" - i *")
+    sys.stdout.write(str(x_after_i))
+    sys.stdout.write("\n")
+
 def test(argv):
     lst = []
     discrim = 0
@@ -234,6 +264,7 @@ def test(argv):
             solve_one_solution(lst, discrim)
         else:
             print "There are no real solutions. The values are complex numbers"
+            solve_complex_solution(lst, discrim)
     else:
         print "We conclude that equation has no solutions"
 
