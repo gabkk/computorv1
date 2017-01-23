@@ -3,6 +3,35 @@ import sys
 import string
 
 
+
+def convert_to_str(value, index):
+    if (value >= 0 and index != 0):
+        tmp = "+"+str(value)
+    else:
+        tmp = str(value)
+    return tmp
+
+def print_reducted_form(liste):
+    index = 0
+    sys.stdout.write("reducted form: ")
+    if liste[0]:
+        sys.stdout.write(convert_to_str(liste[0], index))
+        sys.stdout.write(" ")
+        index += 1
+    if liste[1]:
+        sys.stdout.write(convert_to_str(liste[1], index))
+        sys.stdout.write("X^0 ")
+        index += 1
+    if liste[2]:
+        sys.stdout.write(convert_to_str(liste[2], index))
+        sys.stdout.write("X^1 ")
+        index += 1
+    if liste[3]:
+        sys.stdout.write(convert_to_str(liste[3], index))
+        sys.stdout.write("X^2 ")
+        index += 1
+    sys.stdout.write(" = 0\n")
+
 def remove_x(liste): 
     pattern = r"([\+|\-]?[0-9]*[\.]?[0-9]*)"
     value = []
@@ -57,6 +86,24 @@ def clean_num(num):
         new_num.append(x)
     return new_num
 
+def squareroot(x):
+    a = 1
+    b = x
+    while (abs(a-b)>0.0005):
+        a = (a+b)/2
+        b = x/a
+    return a
+
+def handle_error_sup(pattern_other,liste):
+    x_other = re.findall(pattern_other,liste)
+    for x in x_other:
+      ret = re.findall(r"([0-9]$)", x)
+      if ret:
+        print "Exponential greater than 2"
+      else:
+        print "Parsing error"
+      sys.exit()
+
 def parse_value(liste):
     num = []
     x1 = []
@@ -80,81 +127,22 @@ def parse_value(liste):
     x2 = re.findall(pattern2,liste)
 
     #if an exponential greater than 2 is find return
-    x_other = re.findall(pattern_other,liste)
-    print "x_other"
-    print x_other
-    for x in x_other:
-      ret = re.findall(r"([0-9]$)", x)
-      print "ret"
-      print ret
-      if ret:
-        print "Exponential greater than 2"
-      else:
-        print "Parsing error"
-      sys.exit()
+    handle_error_sup(pattern_other,liste)
 
-    print liste
-
-    print " BEFORE num"
-    print num
-    print "x1"
-    print x1
-    print "x2"
-    print x2
-    
     x1 = remove_x(x1)
     x2 = remove_x(x2)
-    print "x1"
-    print x1
-    print "x2"
-    print x2
-
     x1_empty = remove_x(x1_empty)
     x_zero = remove_x(x_zero)
     x_1 = x1 + x1_empty
     num = remove_x_in_num(num)
-   
     num = clean_num(num)
     remove_value_from_list(num, x_zero)
     remove_value_from_list(num, x_1)
     remove_value_from_list(num, x2)
-
-    print " After remove num"
-    print num
-    print "x_zero"
-    print x_zero
-    print "x_1"
-    print x_1
-    print "x2"
-    print x2
-    print "\n\n"
-    
-    print "final_list"
-    print final_list
     final_list.append(modif_string_to_float(num))
-    print "final_list1"
-    print final_list
     final_list.append(modif_string_to_float(x_zero))
-    print "final_list2"
-    print final_list
     final_list.append(modif_string_to_float(x_1))
-    print "final_list3"
-    print final_list
     final_list.append(modif_string_to_float(x2))
-    print "final_list4"
-    print final_list
-   
-    print "num"
-    print num
-    print "x_zero"
-    print x_zero
-    print "x_1"
-    print x_1
-    print "x1"
-    print x1
-    print "x2"
-    print x2
-
     return final_list
 
 def sum_lst_value(lst1, lst2):
@@ -166,8 +154,8 @@ def sum_lst_value(lst1, lst2):
 
 def solve_two_solution(liste, discrim):
     print "value of discrim "+ str(discrim)
-    x1 = (-liste[2] + (discrim**(.5)))/(2*liste[3])
-    x2 = (-liste[2] - (discrim**(.5)))/(2*liste[3])
+    x1 = (-liste[2] + (squareroot(discrim)))/(2*liste[3])
+    x2 = (-liste[2] - (squareroot(discrim)))/(2*liste[3])
     print "Two solutions"
     print x1
     print x2
@@ -178,34 +166,6 @@ def solve_one_solution(liste, discrim):
     print "Only one solution"
     print x1
 
-def convert_to_str(value, index):
-    if (value >= 0 and index != 0):
-        tmp = "+"+str(value)
-    else:
-        tmp = str(value)
-    return tmp
-
-def print_reducted_form(liste):
-    index = 0
-    sys.stdout.write("reducted form: ")
-    if liste[0]:
-        sys.stdout.write(convert_to_str(liste[0], index))
-        sys.stdout.write(" ")
-        index += 1
-    if liste[1]:
-        sys.stdout.write(convert_to_str(liste[1], index))
-        sys.stdout.write("X^0 ")
-        index += 1
-    if liste[2]:
-        sys.stdout.write(convert_to_str(liste[2], index))
-        sys.stdout.write("X^1 ")
-        index += 1
-    if liste[3]:
-        sys.stdout.write(convert_to_str(liste[3], index))
-        sys.stdout.write("X^2 ")
-        index += 1
-    sys.stdout.write(" = 0\n")
-
 def solve_first_degree(lst):
     b = -lst[1]
     a = lst[2]
@@ -214,7 +174,7 @@ def solve_first_degree(lst):
 def solve_complex_solution(lst, discrim):
     discrim = discrim*-1
     x_before_i = (-lst[2])/(2.*lst[3])
-    x_after_i = (discrim**(.5))/(2.*lst[3])
+    x_after_i = (squareroot(discrim))/(2.*lst[3])
     sys.stdout.write(str(x_before_i))
     sys.stdout.write(" + i *")
     sys.stdout.write(str(x_after_i))
@@ -227,9 +187,10 @@ def solve_complex_solution(lst, discrim):
 def test(argv):
     lst = []
     discrim = 0
-    argv[1] = argv[1].replace(" ", "") 
-    argv[1] = argv[1].replace("*", "") 
-    argv[1] = argv[1].replace("x", "X") 
+    argv[1] = argv[1].replace(" ", "").replace("*", "").replace("x", "X")
+    if not re.findall(r"(\=)", argv[1]):
+      print "Parsing error '=' sign missing"
+      return ;
     lst = argv[1].split('=')
     lst[0] = ' '+lst[0]
     lst[1] = ' '+lst[1]
@@ -237,15 +198,9 @@ def test(argv):
     list_left = parse_value(lst[0])
     list_right = parse_value(lst[1])
 
-    print "value of liste left right:"
-    print list_left
-    print list_right
-
     lst = sum_lst_value(list_left, list_right)
     print_reducted_form(lst)
 
-    print "lst"
-    print lst
     if not lst[1]:
         lst[1] = 0
     if not lst[0]:
