@@ -32,7 +32,7 @@ def print_reducted_form(liste):
         index += 1
     sys.stdout.write(" = 0\n")
 
-def remove_x(liste): 
+def remove_x(liste, num): 
     pattern = r"([\+|\-]?[0-9]*[\.]?[0-9]*)"
     value = []
     for x in liste:
@@ -43,6 +43,7 @@ def remove_x(liste):
             value.append("1")
         elif (value[0] == '+' or value[0] == '-'):
             value[0] += "1"
+            num.append("1")
     return value
 
 def remove_value_from_list(the_list, source):
@@ -129,16 +130,25 @@ def parse_value(liste):
     #if an exponential greater than 2 is find return
     handle_error_sup(pattern_other,liste)
 
-    x1 = remove_x(x1)
-    x2 = remove_x(x2)
-    x1_empty = remove_x(x1_empty)
-    x_zero = remove_x(x_zero)
+    print num
+
+
+    x1 = remove_x(x1, num)
+    x2 = remove_x(x2, num)
+    x1_empty = remove_x(x1_empty, num)
+    
+    x_zero = remove_x(x_zero, num)
+    
     x_1 = x1 + x1_empty
+    print num
     num = remove_x_in_num(num)
+    print num
     num = clean_num(num)
+    print num
     remove_value_from_list(num, x_zero)
     remove_value_from_list(num, x_1)
     remove_value_from_list(num, x2)
+    print num
     final_list.append(modif_string_to_float(num))
     final_list.append(modif_string_to_float(x_zero))
     final_list.append(modif_string_to_float(x_1))
@@ -200,6 +210,22 @@ def test(argv):
 
     lst = sum_lst_value(list_left, list_right)
     print_reducted_form(lst)
+
+    print "left"
+    print list_left[0]
+    print list_left[1]
+    print list_left[2]
+    print list_left[3]
+    print "rigth"
+    print list_left[0]
+    print list_left[1]
+    print list_left[2]
+    print list_left[3]
+
+
+    if (lst[0] == lst[1]) and not lst[2] and not lst[3]:
+      print "The polynome have all the real numbers as solution"
+      return;
 
     if not lst[1]:
         lst[1] = 0
