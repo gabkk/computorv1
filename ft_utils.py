@@ -1,14 +1,22 @@
 import re
+import sys
 
-def handle_error_sup(pattern_other,liste):
-    x_other = re.findall(pattern_other,liste)
-    for x in x_other:
-      ret = re.findall(r"([0-9]$)", x)
-      if ret:
-        print "Exponential greater than 2"
-      else:
-        print "Parsing error"
-      sys.exit()
+def handle_error_sup(liste):
+    #pattern_other = r"([\+|\-]?[[0-9]*[\.]?[0-9]*]*X\^[^0-2]|[\+|\-]?[[0-9]*[\.]?[0-9]*]*X\^[1-2][0-9])"
+    #x_other = re.findall(pattern_other,liste)
+  #  print liste
+    cmpt = 0
+    remove = []
+    for x in liste:
+        if x == 0 and cmpt > 3:
+            remove.append(cmpt)
+        else:
+            cmpt += 1
+    for x in remove:
+        del liste[x]
+    if len(liste) > 4:
+        print "exponential greater than 2"
+        sys.exit()
 
 def remove_x(liste, num): 
     pattern = r"([\+|\-]?[0-9]*[\.]?[0-9]*)"

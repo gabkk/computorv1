@@ -1,6 +1,7 @@
 import re
 import sys
 import string
+import ft_utils
 from parse import parse_value
 
 def convert_to_str(value, index):
@@ -40,11 +41,20 @@ def squareroot(x):
     return a
 
 def sum_lst_value(lst1, lst2):
-    lst1[0] -= lst2[0]
-    lst1[1] -= lst2[1]
-    lst1[2] -= lst2[2]
-    lst1[3] -= lst2[3]
-    return lst1
+    len1 = len(lst1)
+    len2 = len(lst2)
+    if len1 > len2:
+        nbr = len1 - len2
+        while nbr > 0:
+            lst2.append(0)
+            nbr -= 1
+    elif len2 > len1:
+        nbr = len2 - len1
+        while nbr > 0:
+            lst1.append(0)
+            nbr -= 1
+    c = [x-y for x,y in zip(lst1, lst2)]
+    return c
 
 def solve_first_degree(lst):
     b = -lst[1]
@@ -63,14 +73,14 @@ def solve_two_solution(liste, discrim):
     print "value of discrim "+ str(discrim)
     x1 = (-liste[2] + (squareroot(discrim)))/(2*liste[3])
     x2 = (-liste[2] - (squareroot(discrim)))/(2*liste[3])
+    x1 = x1 *1000/1000
+    x1 = "%.6f" % x1
+    x2 = x2 *1000/1000
+    x2 = "%.6f" % x2
     print "Two solutions"
     #round number
-    if int(x1)-x1 < 0.0000001:
-      x1 = int(x1)
-    print "X= " + str(x1)
-    if int(x2)-x2 < 0.0000001:
-      x2 = int(x2)
-    print "X1= " + str(x2)
+    print "X1= " + x1
+    print "X2= " + x2
 
 def solve_complex_solution(lst, discrim):
     print "There are no real solutions. The values are complex numbers"
@@ -79,28 +89,29 @@ def solve_complex_solution(lst, discrim):
     x_before_i = (-lst[2])/(2.*lst[3])
     x_after_i = (squareroot(discrim))/(2.*lst[3])
     #round number
-    if x_after_i < 0 and (int(x_after_i) + x_after_i < 0.0000001):
-      x_after_i = int(x_after_i)
-    elif (int(x_after_i) + x_after_i) < 0.0000001:
-      x_after_i = int(x_after_i)
+    x_after_i = x_after_i *1000/1000
+    x_after_i = "%.6f" % x_after_i
+
     #print
+    sys.stdout.write("X1= ")
     if x_before_i != 0:
       sys.stdout.write(str(x_before_i))
     sys.stdout.write(" + i *")
-    sys.stdout.write(str(x_after_i))
+    sys.stdout.write(x_after_i)
     sys.stdout.write("\n")
+    sys.stdout.write("X2= ")
     if x_before_i != 0:
       sys.stdout.write(str(x_before_i))
     sys.stdout.write(" - i *")
-    sys.stdout.write(str(x_after_i))
+    sys.stdout.write(x_after_i)
     sys.stdout.write("\n")
 
 def test(argv):
     lst = []
     discrim = 0
     argv[1] = argv[1].replace(" ", "").replace("*", "").replace("x", "X")
-    if not re.findall(r"(\=)", argv[1]):
-      print "Parsing error '=' sign missing"
+    if argv[1].count('=') != 1:
+      print "Parsing error only one '=' sign is attended"
       return ;
     lst = argv[1].split('=')
     try:
@@ -119,11 +130,15 @@ def test(argv):
     list_left = parse_value(lst[0])
     list_right = parse_value(lst[1])
     lst = sum_lst_value(list_left, list_right)
+
+    #if an exponential greater than 2 is find return
+    ft_utils.handle_error_sup(lst)
+
     print_reducted_form(lst)
 
     if (lst[0] == lst[1]) and not lst[2] and not lst[3]:
-      print "The polynome have all the real numbers as solution"
-      return;
+      print "This polynome have all the real numbers as solution"
+      return ;
     if not lst[1]:
         lst[1] = 0
     if not lst[0]:
